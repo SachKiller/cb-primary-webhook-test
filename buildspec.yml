@@ -2,24 +2,9 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "=== Webhook Variables ==="
-      - echo "CODEBUILD_WEBHOOK_BASE_REF=$CODEBUILD_WEBHOOK_BASE_REF"
-      - echo "CODEBUILD_WEBHOOK_HEAD_REF=$CODEBUILD_WEBHOOK_HEAD_REF"
-      - echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER"
-      - echo "CODEBUILD_WEBHOOK_EVENT=$CODEBUILD_WEBHOOK_EVENT"
-      - echo "=== Primary Source ==="
-      - echo "CODEBUILD_SOURCE_VERSION=$CODEBUILD_SOURCE_VERSION"
-      - echo "Primary branch:"
-      - cd $CODEBUILD_SRC_DIR && git branch
-      - echo "=== Secondary Source (before checkout) ==="
-      - echo "CODEBUILD_SOURCE_VERSION_SECONDARY_SRC=$CODEBUILD_SOURCE_VERSION_SECONDARY_SRC"
-      - echo "Secondary branch before:"
-      - cd $CODEBUILD_SRC_DIR_SECONDARY_SRC && git branch
-      - echo "=== Workaround - checkout webhook branch on secondary source ==="
-      - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed 's|refs/heads/||')
-      - echo "Checking out branch $BRANCH_NAME on secondary source"
+      - echo "BASE_REF=$CODEBUILD_WEBHOOK_BASE_REF"
+      - echo "HEAD_REF=$CODEBUILD_WEBHOOK_HEAD_REF"
+      - echo "Secondary branch before:" && cd $CODEBUILD_SRC_DIR_SECONDARY_SRC && git branch
+      - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_BASE_REF | sed 's|refs/heads/||')
       - cd $CODEBUILD_SRC_DIR_SECONDARY_SRC && git fetch origin $BRANCH_NAME && git checkout $BRANCH_NAME
-      - echo "Secondary branch after:"
-      - cd $CODEBUILD_SRC_DIR_SECONDARY_SRC && git branch
-      - echo "=== Verify - check for feature-test-marker.txt ==="
-      - ls $CODEBUILD_SRC_DIR_SECONDARY_SRC/feature-test-marker.txt && echo "SUCCESS - feature-test branch checked out" || echo "FAIL - still on main"
+      - echo "Secondary branch after:" && git branch
